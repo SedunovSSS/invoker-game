@@ -102,7 +102,7 @@ while running:
                             best_score = score
                             json.dump({'best_score': best_score}, open('best.json', 'w'), indent=4)
                         new_choised_spell = random.choice(list(spells.keys()))
-                        while new_choised_spell == choised_spell:
+                        while new_choised_spell == choised_spell or new_choised_spell in current_spells:
                             new_choised_spell = random.choice(list(spells.keys()))
                         choised_spell = new_choised_spell
                         endtime = time.time() + 6
@@ -112,7 +112,7 @@ while running:
                 current_spells = [None]*2
                 score = 0
                 new_choised_spell = random.choice(list(spells.keys()))
-                while new_choised_spell == choised_spell:
+                while new_choised_spell == choised_spell or new_choised_spell in current_spells:
                     new_choised_spell = random.choice(list(spells.keys()))
                 choised_spell = new_choised_spell
                 lose = False
@@ -142,7 +142,7 @@ while running:
                             best_score = score
                             json.dump({'best_score': best_score}, open('best.json', 'w'), indent=4)
                         new_choised_spell = random.choice(list(spells.keys()))
-                        while new_choised_spell == choised_spell:
+                        while new_choised_spell == choised_spell or new_choised_spell in current_spells:
                             new_choised_spell = random.choice(list(spells.keys()))
                         choised_spell = new_choised_spell
                         endtime = time.time() + 6
