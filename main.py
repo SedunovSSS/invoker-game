@@ -181,11 +181,11 @@ while running:
 
     for i in range(len(current_spheres)):
         if current_spheres[i] == 'q':
-            sc.blit(quas, (223+138*i, HEIGHT//2-64))
+            sc.blit(quas, (228+138*i, HEIGHT//2-64))
         if current_spheres[i] == 'w':
-            sc.blit(wex, (223+138*i, HEIGHT//2-64))
+            sc.blit(wex, (228+138*i, HEIGHT//2-64))
         if current_spheres[i] == 'e':
-            sc.blit(exort, (223+138*i, HEIGHT//2-64))
+            sc.blit(exort, (228+138*i, HEIGHT//2-64))
 
     for i in range(2):
         if current_spells[i]:
