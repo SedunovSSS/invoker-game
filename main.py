@@ -4,6 +4,19 @@ import random
 import json
 pygame.init()
 
+WIDTH, HEIGHT = 860, 860
+SLIDER_WIDTH, SLIDER_HEIGHT = 160, 10
+SLIDER_X, SLIDER_Y = (WIDTH - SLIDER_WIDTH) - 20, 20
+FPS = 666
+
+sc = pygame.display.set_mode([WIDTH, HEIGHT])
+clock = pygame.time.Clock()
+
+pygame.display.set_caption('Invoker Game')
+icon = pygame.image.load('spells/invoker.png').convert()
+pygame.display.set_icon(icon)
+
+
 spells = {
     'qqq': {
         'fullname': 'Cold Snap',
@@ -56,33 +69,36 @@ invoke = pygame.image.load('spells/invoker_invoke.png')
 font = pygame.font.SysFont('Arial', 50, bold=True)
 font1 = pygame.font.SysFont('Arial', 20, bold=True)
 
-WIDTH, HEIGHT = 860, 860
-FPS = 666
-
+dragging = False
 score = 0
+
 try:
-    best_score = json.load(open('best.json', 'r'))['best_score']
+    f = open('settings.json', 'r')
+    data = json.load(f)
+    best_score = data['best_score']
+    slider_value = data['slider_value']
 except:
     best_score = 0
-
-sc = pygame.display.set_mode([WIDTH, HEIGHT])
-clock = pygame.time.Clock()
-pygame.display.set_caption('Invoker Game')
-pygame.display.set_icon(pygame.image.load('spells/invoker.png'))
+    slider_value = 0.25
+time2makespell = int(20*slider_value)
 
 running = True
 lose = False
+start = False
 
 current_spheres = ''
 current_spells = [None]*2
 
-choised_spell = random.choice(list(spells.keys()))
-endtime = time.time() + 6
 
 while running:
     for i in pygame.event.get():
         if i.type == pygame.QUIT:
             running = False
+        elif i.type == pygame.KEYDOWN and not start and not lose:
+            if i.key == pygame.K_RETURN:
+                choised_spell = random.choice(list(spells.keys()))
+                endtime = time.time() + time2makespell + 1
+                start = True
         elif i.type == pygame.KEYDOWN and not lose:
             if i.key == pygame.K_q:
                 current_spheres += 'q'
@@ -100,15 +116,16 @@ while running:
                         current_spells[0] = s
                     if s == choised_spell:
                         time_diff = endtime - time.time()
-                        score += 100*int(time_diff)
+                        score += int((1000*time_diff/(time2makespell)**2))
                         if score >= best_score:
                             best_score = score
-                            json.dump({'best_score': best_score}, open('best.json', 'w'), indent=4)
+                            json.dump({'best_score': best_score, 'slider_value': slider_value}, open('settings.json', 'w'), indent=4)
                         new_choised_spell = random.choice(list(spells.keys()))
                         while new_choised_spell == choised_spell or new_choised_spell in current_spells:
                             new_choised_spell = random.choice(list(spells.keys()))
                         choised_spell = new_choised_spell
-                        endtime = time.time() + 6
+                        endtime = time.time() + time2makespell + 1
+
         elif i.type == pygame.KEYDOWN and lose:
             if i.key == pygame.K_RETURN:
                 current_spheres = ''
@@ -119,9 +136,9 @@ while running:
                     new_choised_spell = random.choice(list(spells.keys()))
                 choised_spell = new_choised_spell
                 lose = False
-                endtime = time.time() + 6
+                endtime = time.time() + time2makespell + 1
 
-        elif i.type == pygame.MOUSEBUTTONDOWN and not lose:
+        elif i.type == pygame.MOUSEBUTTONDOWN and not lose and start:
             mx, my = pygame.mouse.get_pos()
             if HEIGHT-16-128 <= my <= HEIGHT-16 and 16 <= mx <= 128+16:
                 current_spheres += 'q'
@@ -140,44 +157,78 @@ while running:
                         current_spells[0] = s
                     if s == choised_spell:
                         time_diff = endtime - time.time()
-                        score += 100*int(time_diff)
+                        score += int((1000*time_diff/(time2makespell)**2))
                         if score >= best_score:
                             best_score = score
-                            json.dump({'best_score': best_score}, open('best.json', 'w'), indent=4)
+                            json.dump({'best_score': best_score, 'slider_value': slider_value}, open('settings.json', 'w'), indent=4)
                         new_choised_spell = random.choice(list(spells.keys()))
                         while new_choised_spell == choised_spell or new_choised_spell in current_spells:
                             new_choised_spell = random.choice(list(spells.keys()))
                         choised_spell = new_choised_spell
-                        endtime = time.time() + 6
+                        endtime = time.time() + time2makespell + 1
 
             if len(current_spheres) > 3:
                 current_spheres = current_spheres[-3:]
+
+        elif i.type == pygame.MOUSEBUTTONDOWN and (lose or (not start)):
+            if i.button == 1:
+                mouse_x, mouse_y = i.pos
+                if SLIDER_X <= mouse_x <= SLIDER_X + SLIDER_WIDTH and SLIDER_Y <= mouse_y <= SLIDER_Y + SLIDER_HEIGHT:
+                    dragging = True
+                    slider_value = (mouse_x - SLIDER_X) / SLIDER_WIDTH
+                    slider_value = max(0, min(slider_value, 1))
+                    time2makespell = max(1, int(slider_value*20))
+                    json.dump({'best_score': best_score, 'slider_value': slider_value}, open('settings.json', 'w'), indent=4)
+
+        elif i.type == pygame.MOUSEBUTTONUP and (lose or (not start)):
+            if i.button == 1:
+                dragging = False
+
+        elif i.type == pygame.MOUSEMOTION and (lose or (not start)):
+            if dragging:
+                mouse_x, _ = i.pos
+                slider_value = (mouse_x - SLIDER_X) / SLIDER_WIDTH
+                slider_value = max(0, min(slider_value, 1))
+                time2makespell = max(1, int(slider_value*20))
+                json.dump({'best_score': best_score, 'slider_value': slider_value}, open('settings.json', 'w'), indent=4)
 
     sc.fill('black')
     sc.blit(quas, (16, HEIGHT-16-128))
     sc.blit(wex, (154, HEIGHT-16-128))
     sc.blit(exort, (292, HEIGHT-16-128))
 
-    sc.blit(spells[choised_spell]['image'], (366, HEIGHT//4-64))
-    font_render = font.render(spells[choised_spell]['fullname'], True, (255, 255, 255))
-    sc.blit(font_render, ((WIDTH-font.size(spells[choised_spell]['fullname'])[0])//2, HEIGHT//4+64))
+    if start:
+        sc.blit(spells[choised_spell]['image'], (366, HEIGHT//4-64))
+        font_render = font.render(spells[choised_spell]['fullname'], True, (0, 255, 255))
+        sc.blit(font_render, ((WIDTH-font.size(spells[choised_spell]['fullname'])[0])//2, HEIGHT//4+64))
 
-    font_render2 = font1.render(f'Score: {score}', True, (255, 255, 255))
-    font_render3 = font1.render(f'Best Score: {best_score}', True, (255, 255, 255))
+    font_render2 = font1.render(f'Score: {score}', True, (0, 255, 255))
+    font_render3 = font1.render(f'Best Score: {best_score}', True, (0, 255, 255))
 
     sc.blit(font_render2, (10, 10))
-    sc.blit(font_render3, (10, 50))
+    sc.blit(font_render3, (10, 30))
 
     if not lose:
-        time_diff = endtime - time.time()
-        if int(time_diff) <= 0:
-            lose = True
-        time_str = f'Time remaining: {int(time_diff)}'
-        font_render1 = font.render(time_str, True, (255, 255, 255))
-        sc.blit(font_render1, ((WIDTH-font.size(time_str)[0])/2, HEIGHT//4+320))
+        if not start:
+            font_render1 = font.render('Press Enter to start', True, (0, 255, 255))
+            sc.blit(font_render1, ((WIDTH-font.size('Press Enter to start')[0])/2, HEIGHT//4+320))
+        else:
+            time_diff = endtime - time.time()
+            if time_diff <= 1:
+                lose = True
+            else:
+                time_str = f'Time remaining: {int(time_diff)}'
+                font_render1 = font.render(time_str, True, (0, 255, 255))
+                sc.blit(font_render1, ((WIDTH-font.size(time_str)[0])/2, HEIGHT//4+320))
     else:
-        font_render1 = font.render('You Lose!', True, (255, 255, 255))
-        sc.blit(font_render1, ((WIDTH-font.size('You Lose!')[0])/2, HEIGHT//4+320))
+        font_render1 = font.render('You Lose! Press Enter to play', True, (255, 24, 0))
+        sc.blit(font_render1, ((WIDTH-font.size('You Lose! Press Enter to play')[0])/2, HEIGHT//4+320))
+
+    if lose or (not start):
+        font_render4 = font1.render(f'Time 2 make spell: {time2makespell}s', True, (0, 255, 255))
+        sc.blit(font_render4, (480, SLIDER_Y-8))
+        pygame.draw.rect(sc, (200, 200, 200), (SLIDER_X, SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT))
+        pygame.draw.rect(sc, (0, 255, 255), (SLIDER_X + slider_value * SLIDER_WIDTH - 10, SLIDER_Y - 5, 20, SLIDER_HEIGHT + 10))
 
     for i in range(len(current_spheres)):
         if current_spheres[i] == 'q':
