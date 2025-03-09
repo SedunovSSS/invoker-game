@@ -60,7 +60,10 @@ WIDTH, HEIGHT = 860, 860
 FPS = 666
 
 score = 0
-best_score = json.load(open('best.json', 'r'))['best_score']
+try:
+    best_score = json.load(open('best.json', 'r'))['best_score']
+except:
+    best_score = 0
 
 sc = pygame.display.set_mode([WIDTH, HEIGHT])
 clock = pygame.time.Clock()
