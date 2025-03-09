@@ -158,9 +158,9 @@ while running:
     sc.blit(wex, (154, HEIGHT-16-128))
     sc.blit(exort, (292, HEIGHT-16-128))
 
-    sc.blit(spells[choised_spell]['image'], (356, HEIGHT//4-64))
+    sc.blit(spells[choised_spell]['image'], (366, HEIGHT//4-64))
     font_render = font.render(spells[choised_spell]['fullname'], True, (255, 255, 255))
-    sc.blit(font_render, ((WIDTH-font.size(spells[choised_spell]['fullname'])[0])/2, HEIGHT//4+64))
+    sc.blit(font_render, ((WIDTH-font.size(spells[choised_spell]['fullname'])[0])//2, HEIGHT//4+64))
 
     font_render2 = font1.render(f'Score: {score}', True, (255, 255, 255))
     font_render3 = font1.render(f'Best Score: {best_score}', True, (255, 255, 255))
@@ -181,11 +181,11 @@ while running:
 
     for i in range(len(current_spheres)):
         if current_spheres[i] == 'q':
-            sc.blit(quas, (218+138*i, HEIGHT//2-64))
+            sc.blit(quas, (223+138*i, HEIGHT//2-64))
         if current_spheres[i] == 'w':
-            sc.blit(wex, (218+138*i, HEIGHT//2-64))
+            sc.blit(wex, (223+138*i, HEIGHT//2-64))
         if current_spheres[i] == 'e':
-            sc.blit(exort, (218+138*i, HEIGHT//2-64))
+            sc.blit(exort, (223+138*i, HEIGHT//2-64))
 
     for i in range(2):
         if current_spells[i]:
