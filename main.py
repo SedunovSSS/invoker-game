@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 import json
+import os
 pygame.init()
 
 WIDTH, HEIGHT = 860, 860
@@ -13,51 +14,51 @@ sc = pygame.display.set_mode([WIDTH, HEIGHT])
 clock = pygame.time.Clock()
 
 pygame.display.set_caption('Invoker Game')
-icon = pygame.image.load('spells/invoker.png').convert()
+icon = pygame.image.load(os.getcwd()+'/spells/invoker.png').convert_alpha()
 pygame.display.set_icon(icon)
 
 
 spells = {
     'qqq': {
         'fullname': 'Cold Snap',
-        'image': pygame.image.load('spells/invoker_cold_snap.png')
+        'image': pygame.image.load('spells/invoker_cold_snap.png').convert_alpha()
     },
     'qqw': {
         'fullname': 'Ghost Walk',
-        'image': pygame.image.load('spells/invoker_ghost_walk.png')
+        'image': pygame.image.load('spells/invoker_ghost_walk.png').convert_alpha()
     },
     'eqq': {
         'fullname': 'Ice Wall',
-        'image': pygame.image.load('spells/invoker_ice_wall.png')
+        'image': pygame.image.load('spells/invoker_ice_wall.png').convert_alpha()
     },
     'www': {
         'fullname': 'E.M.P',
-        'image': pygame.image.load('spells/invoker_emp.png')
+        'image': pygame.image.load('spells/invoker_emp.png').convert_alpha()
     },
     'qww': {
         'fullname': 'Tornado',
-        'image': pygame.image.load('spells/invoker_tornado.png')
+        'image': pygame.image.load('spells/invoker_tornado.png').convert_alpha()
     },
     'eww': {
         'fullname': 'Alacrity',
-        'image': pygame.image.load('spells/invoker_alacrity.png')
+        'image': pygame.image.load('spells/invoker_alacrity.png').convert_alpha()
     },
     'eee': {
         'fullname': 'Sun Strike',
-        'image': pygame.image.load('spells/invoker_sun_strike.png')
+        'image': pygame.image.load('spells/invoker_sun_strike.png').convert_alpha()
     },
     'eeq': {
         'fullname': 'Forge Spirit',
-        'image': pygame.image.load('spells/invoker_forge_spirit.png')
+        'image': pygame.image.load('spells/invoker_forge_spirit.png').convert_alpha()
     },
     'eew': {
         'fullname': 'Chaos Meteor',
-        'image': pygame.image.load('spells/invoker_chaos_meteor.png')
+        'image': pygame.image.load('spells/invoker_chaos_meteor.png').convert_alpha()
     },
     'eqw': {
         'fullname': 'Deafening Blast',
         'invoke': 'qwe',
-        'image': pygame.image.load('spells/invoker_deafening_blast.png')
+        'image': pygame.image.load('spells/invoker_deafening_blast.png').convert_alpha()
     },
 }
 
@@ -80,7 +81,7 @@ try:
 except:
     best_score = 0
     slider_value = 0.25
-time2makespell = int(20*slider_value)
+time2makespell = max(1, int(slider_value*20))
 
 running = True
 lose = False
@@ -247,3 +248,4 @@ while running:
     sc.blit(invoke, (706, HEIGHT-16-128))
     pygame.display.flip()
     clock.tick(FPS)
+
